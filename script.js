@@ -1,224 +1,292 @@
-const GM = {
-    // DOM要素の参照を保持
-    initialImageElement: null,
-    imageContainerGroup: null,
-    imgElements: [],
-    textContentElements: [],
+/* style.css */
 
-    // 画像とテキストのデータを保持
-    full_image_data: [],
-    // 現在表示されている画像の元のテキストデータを保持（使用済み状態ではないもの）
-    currentOriginalTexts: [], 
+body {
+    background-color: black;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 80px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-    // 定数定義
-    INITIAL_IMAGE_PATH: 'img/intro.png',
-    IMAGE_BASE_PATH: 'img/',
+h1 {
+    margin-bottom: 30px;
+}
 
-    /**
-     * 初期化処理
-     * DOM要素の取得とイベントリスナーの設定を行う
-     */
-    init: function() {
-        // DOM要素の取得
-        this.initialImageElement = document.getElementById("initialImage");
-        this.imageContainerGroup = document.getElementById("imageContainerGroup");
-        this.imgElements[0] = document.getElementById("displayImage0");
-        this.imgElements[1] = document.getElementById("displayImage1");
-        this.imgElements[2] = document.getElementById("displayImage2");
-        this.textContentElements[0] = document.getElementById("textContent0");
-        this.textContentElements[1] = document.getElementById("textContent1");
-        this.textContentElements[2] = document.getElementById("textContent2");
+#reloadButton {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+}
 
-        // 画像データの準備
-        this.prepare_image_data(10);
-        this.initialImageElement.src = this.INITIAL_IMAGE_PATH;
+#darkModeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+}
 
-        // イベントリスナーの設定
-        document.getElementById("changeImageButton").addEventListener("click", () => {
-            this.ChangeImage();
-        });
-        document.getElementById("reloadButton").addEventListener("click", () => {
-            window.location.reload();
-        });
-        document.getElementById("darkModeToggle").addEventListener("click", () => {
-            document.body.classList.toggle('light-mode');
-            const isLightMode = document.body.classList.contains('light-mode');
-            localStorage.setItem('darkMode', isLightMode ? 'off' : 'on');
-            document.getElementById("darkModeToggle").innerText = isLightMode ? 'ダークモード' : 'ライトモード';
-        });
+#initialImage {
+    width: 872px;
+    height: 510px;
+    object-fit: contain;
+    margin-bottom: 30px;
+    max-width: 90%; /* レスポンシブ対応 */
+    height: auto; /* 高さを自動調整 */
+}
 
-        // ダークモード設定の適用
-        this.applySavedDarkModeSetting();
-    },
+#imageContainerGroup {
+    display: none;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* 小さい画面で折り返す */
+}
 
-    /**
-     * 保存されたダークモード設定を適用する
-     */
-    applySavedDarkModeSetting: function() {
-        const darkModeSetting = localStorage.getItem('darkMode');
-        if (darkModeSetting === 'off') {
-            document.body.classList.add('light-mode');
-            document.getElementById("darkModeToggle").innerText = 'ダークモード';
-        } else {
-            document.body.classList.remove('light-mode');
-            document.getElementById("darkModeToggle").innerText = 'ライトモード';
-        }
-    },
+.image-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 25px;
+    position: relative;
+    min-height: 510px; /* スマートフォンでは調整が必要 */
+    padding-top: 10px;
+    width: 280px;
+}
 
-    /**
-     * 画像データを準備する
-     * @param {number} n - 画像の総数
-     */
-    prepare_image_data: function(n) {
-        for (let i = 1; i <= n; i++) {
-            let textContent = "";
-            switch(i) {
-                case 1: textContent = "Eldrazi(3)\nGuacamole(4)\nTightrope(3)"; break;
-                case 2: textContent = "Trendy(2)\nCircus(2)\nPirate(3)"; break;
-                case 3: textContent = "Misunderstood(4)\nTrapeze(2)\nElf(1)"; break;
-                case 4: textContent = "Narrow-Minded(4)\nBaloney(4)\nFireworks(3)"; break;
-                case 5: textContent = "Unsanctioned(5)\nAncient(3)\nJuggler(2)"; break;
-                case 6: textContent = "Phyrexian(4)\nMidway(3)\nBamboozle(3)"; break;
-                case 7: textContent = "Ancestral(2)\nHot Dog(1)\nMinotaur(4)"; break;
-                case 8: textContent = "Playable(3)\nDelusionary(6)\nHydra(2)"; break;
-                case 9: textContent = "Unassuming(3)\nGalatinous(5)\nSerpent(1)"; break;
-                case 10: textContent = "Unglued(2)\nPea-Brained(3)\nDinosaur(4)"; break;
-                default: textContent = `画像 ${i} のダミーテキスト。\n未定義の画像です。\n追加してください。`;
-            }
-            this.full_image_data.push({ src: `${this.IMAGE_BASE_PATH}${i}.png`, text: textContent });
-        }
-    },
+.image-wrapper img {
+    width: 244px;
+    height: 300px;
+    object-fit: contain;
+    cursor: default;
+    max-width: 100%; /* 親要素の幅に合わせて縮小 */
+    height: auto; /* 高さを自動調整 */
+}
 
-    /**
-     * 表示する画像をランダムに選択し、テキストを更新する
-     * 初回表示時にも正しいハイライトが適用されるようにする
-     */
-    ChangeImage: function() {
-        // 初期画像を非表示にし、画像グループを表示
-        if (this.initialImageElement.style.display !== 'none') {
-            this.initialImageElement.style.display = 'none';
-            this.imageContainerGroup.style.display = 'flex';
-        }
+.used-status {
+    margin-top: 5px;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: yellow;
+    visibility: hidden;
+    position: absolute;
+    bottom: 5px;
+}
 
-        // 画像データをシャッフル
-        let shuffledData = [...this.full_image_data];
-        for (let i = shuffledData.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
-        }
+.text-content {
+    width: 280px;
+    height: 150px;
+    margin-top: 10px;
+    font-size: 2.0em;
+    line-height: 1.3em;
+    text-align: center;
+    overflow: hidden;
+    color: #eee;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
 
-        const numDisplayImages = 3;
-        if (shuffledData.length >= numDisplayImages) {
-            this.currentOriginalTexts = []; // 新しく表示されるテキストを格納する配列を初期化
+.text-content .line {
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.3s, color 0.3s;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
 
-            // 各画像とテキストを設定
-            for (let k = 0; k < numDisplayImages; k++) {
-                this.imgElements[k].src = shuffledData[k].src;
-                this.currentOriginalTexts[k] = shuffledData[k].text.split('\n'); // 元のテキストを保存
-            }
-            
-            // 初回表示または再抽選時に、すべてのテキストを初期状態（使用済みなし）で更新
-            // そして、全体の最大値に基づいてハイライトを適用
-            this.updateAllDisplayedTexts(true); // ★ 引数trueで「使用済み」状態を無視して初期描画
-        }
-    },
+.text-content .line:last-child {
+    padding-bottom: 0;
+}
 
-    /**
-     * テキスト行がクリックされたときの処理
-     * 「使用済み」と元のテキストを切り替える。
-     * 切り替え時に赤文字のハイライトを再評価し、全てのテキストを更新する。
-     * @param {Event} event - クリックイベントオブジェクト
-     */
-    handleLineClick: function(event) {
-        const clickedLine = event.currentTarget;
-        const imageIndex = parseInt(clickedLine.dataset.imageIndex);
-        const lineIndex = parseInt(clickedLine.dataset.lineIndex);
+.text-content .line.used {
+    color: yellow;
+    font-size: 0.8em;
+    opacity: 0.8;
+    cursor: pointer;
+}
 
-        // 「使用済み」状態を切り替える
-        if (clickedLine.classList.contains('used')) {
-            // 「使用済み」クラスを削除するだけ。表示内容はupdateAllDisplayedTextsで設定される
-            clickedLine.classList.remove('used'); 
-        } else {
-            // 「使用済み」クラスを追加し、表示内容を直接設定。これはupdateAllDisplayedTextsで上書きされる可能性あり
-            // clickedLine.innerHTML = "使用済み"; // この行は冗長になるので削除
-            clickedLine.classList.add('used');
-        }
+.highlight-red {
+    color: red;
+}
 
-        // 状態が変更されたので、全ての表示中のテキストを再評価し、ハイライトを更新
-        this.updateAllDisplayedTexts(false); // ★ 通常クリックなのでfalse（現在の使用済み状態を考慮）
-    },
+#changeImageButton {
+    position: fixed;
+    bottom: 20px;
+    padding: 15px 30px;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1000;
+}
 
-    /**
-     * 現在表示されている全てのテキストコンテンツを再評価し、ハイライトを適用する
-     * この関数は、画像が切り替わった時とテキストがクリックされた時に呼び出される
-     * @param {boolean} resetUsedStatus - trueの場合、既存の「使用済み」状態を無視して再描画する（初回表示用）
-     */
-    updateAllDisplayedTexts: function(resetUsedStatus = false) { // ★ 引数を追加
-        let allNumbers = []; // 現在表示されているすべての行の数値と元のテキストを収集
-        let currentUsedStates = []; // 各行の現在の「使用済み」状態を保持
+/* Light mode styles */
+body.light-mode {
+    background-color: white;
+    color: black;
+}
 
-        // まず、現在の「使用済み」状態を把握する
-        for (let i = 0; i < this.textContentElements.length; i++) {
-            currentUsedStates[i] = [];
-            const lines = this.textContentElements[i].querySelectorAll('.line');
-            lines.forEach((lineElement, lineIndex) => {
-                // resetUsedStatusがtrueの場合は常にfalse（使用済みではない）とみなす
-                currentUsedStates[i][lineIndex] = resetUsedStatus ? false : lineElement.classList.contains('used');
-            });
-        }
+body.light-mode h1 {
+    color: black;
+}
 
-        // 「使用済み」ではない行のみから数値を抽出し、最大値を見つける
-        for (let i = 0; i < this.currentOriginalTexts.length; i++) {
-            this.currentOriginalTexts[i].forEach((originalLine, lineIndex) => {
-                if (!currentUsedStates[i][lineIndex]) { // 「使用済み」ではない行のみ対象
-                    const match = originalLine.match(/\((\d+)\)/);
-                    const number = match ? parseInt(match[1], 10) : -1;
-                    allNumbers.push({ number: number, imageIndex: i, lineIndex: lineIndex });
-                }
-            });
-        }
+body.light-mode .text-content {
+    color: #333;
+}
 
-        // 有効な数値（-1ではない）の中から最大値を見つける
-        let maxNumber = -1;
-        allNumbers.forEach(item => {
-            if (item.number > maxNumber) {
-                maxNumber = item.number;
-            }
-        });
+body.light-mode #reloadButton {
+    background-color: #6c757d;
+    color: white;
+}
 
-        // 全てのテキストコンテンツを再レンダリング
-        for (let i = 0; i < this.textContentElements.length; i++) {
-            let processedHtml = '';
-            this.currentOriginalTexts[i].forEach((originalLine, lineIndex) => {
-                let displayLine = originalLine;
-                let isUsed = currentUsedStates[i][lineIndex]; // 保持していた「使用済み」状態を使用
+body.light-mode #darkModeToggle {
+    background-color: #007bff;
+    color: white;
+}
 
-                if (isUsed) {
-                    displayLine = "使用済み"; // 「使用済み」の場合は表示テキストを上書き
-                } else {
-                    // 「使用済み」ではない場合のみハイライトを適用
-                    const match = originalLine.match(/\((\d+)\)/);
-                    if (maxNumber >= 0 && match && parseInt(match[1], 10) === maxNumber) {
-                        displayLine = originalLine.replace(/(\((\d+)\))/g, `<span class="highlight-red">$1</span>`);
-                    }
-                }
-                
-                // data-image-index と data-line-index を維持し、'used'クラスを動的に設定
-                processedHtml += `<span class="line ${isUsed ? 'used' : ''}" data-image-index="${i}" data-line-index="${lineIndex}">${displayLine}</span>`;
-            });
-            this.textContentElements[i].innerHTML = processedHtml;
+body.light-mode #changeImageButton {
+    background-color: #007bff;
+    color: white;
+}
 
-            // イベントリスナーを再設定 (innerHTMLの更新で失われるため)
-            this.textContentElements[i].querySelectorAll('.line').forEach(lineElement => {
-                lineElement.addEventListener('click', (event) => {
-                    this.handleLineClick(event);
-                });
-            });
-        }
+body.light-mode .used-status {
+    color: orange;
+}
+
+body.light-mode .highlight-red {
+    color: #cc0000;
+}
+
+body.light-mode .text-content .line.used {
+     color: orange;
+}
+
+
+/* --- スマートフォン向けスタイル (最大画面幅 768px) --- */
+@media (max-width: 768px) {
+    body {
+        margin-top: 20px; /* 上部のマージンを減らす */
+        padding-bottom: 60px; /* 下部のパディングを減らす */
     }
-};
 
-// DOMContentLoadedイベントで初期化処理を実行
-document.addEventListener("DOMContentLoaded", () => {
-    GM.init();
-});
+    h1 {
+        font-size: 1.8em; /* タイトルを小さく */
+        margin-bottom: 20px;
+    }
+
+    #reloadButton,
+    #darkModeToggle {
+        font-size: 14px; /* ボタンの文字を小さく */
+        padding: 8px 12px; /* ボタンのパディングを減らす */
+        top: 10px; /* 上からの位置を調整 */
+    }
+
+    #initialImage {
+        width: 100%; /* 画面幅いっぱいに */
+        max-width: 400px; /* 最大幅を設定して大きくなりすぎないように */
+        height: auto; /* 高さを自動調整 */
+        margin-bottom: 20px;
+    }
+
+    #imageContainerGroup {
+        flex-direction: column; /* 縦並びにする */
+        gap: 20px; /* 縦方向の隙間を調整 */
+        width: 100%; /* 親要素の幅に合わせて100%に */
+    }
+
+    .image-wrapper {
+        width: 90%; /* 画面幅の90%を使用 */
+        max-width: 320px; /* デスクトップ時の280pxより少しだけ余裕を持たせる、または固定 */
+        min-height: auto; /* 最小高さを自動調整 */
+        padding-top: 5px; /* 上部のパディングを減らす */
+        padding-bottom: 15px; /* 下部のパディングを減らす */
+        margin: 0 auto; /* 中央揃え */
+    }
+
+    .image-wrapper img {
+        width: 80%; /* image-wrapperの幅に合わせて縮小 */
+        height: auto; /* 高さを自動調整 */
+        max-width: 200px; /* 画像が大きくなりすぎないように調整 */
+    }
+
+    .text-content {
+        width: 90%; /* image-wrapperの幅に合わせて90%を使用 */
+        max-width: 280px; /* 固定幅を維持したい場合はmax-widthを使用 */
+        height: auto; /* テキストの高さは内容に応じて自動調整 */
+        min-height: 120px; /* 最低限の高さは確保 */
+        font-size: 1.5em; /* フォントサイズを調整 */
+        margin-top: 5px; /* 上部のマージンを減らす */
+        padding: 5px 0; /* パディングを調整 */
+    }
+
+    .text-content .line {
+        padding-bottom: 3px; /* 行間のパディングを減らす */
+        padding-top: 3px;
+    }
+
+    #changeImageButton {
+        padding: 10px 20px; /* ボタンのパディングを減らす */
+        font-size: 18px; /* ボタンの文字を小さく */
+        bottom: 10px; /* 下からの位置を調整 */
+    }
+}
+
+/* さらに小さな画面（例: iPhone SEなど）向けの調整 */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    #reloadButton,
+    #darkModeToggle {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .image-wrapper {
+        width: 95%; /* さらに幅を広げる */
+        max-width: 280px; /* 幅を280pxに固定したい場合 */
+    }
+
+    .text-content {
+        width: 95%; /* image-wrapperの幅に合わせて95%を使用 */
+        max-width: 280px; /* 幅を280pxに固定したい場合 */
+        font-size: 1.4em; /* フォントサイズをさらに調整 */
+        min-height: 100px; /* さらに最小高さを減らす */
+    }
+
+    .image-wrapper img {
+        max-width: 180px; /* 画像サイズをさらに小さく */
+    }
+
+    #changeImageButton {
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+}
