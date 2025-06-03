@@ -1,391 +1,223 @@
-/* style.css */
+// script.js
 
-body {
-    background-color: black;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-    color: white;
-    display: flex;
-    flex-direction: column; /* ★ 縦並びに戻す */
-    align-items: center;
-    min-height: 100vh;
-    position: relative;
-    padding-bottom: 80px;
-    transition: background-color 0.3s, color 0.3s;
-}
+const GM = {
+    // DOM要素の参照を保持
+    initialImageElement: null,
+    imageContainerGroup: null,
+    imgElements: [],
+    textContentElements: [],
 
-h1 {
-    margin-bottom: 30px;
-}
+    // 画像とテキストのデータを保持
+    full_image_data: [],
+    // 現在表示されている画像の元のテキストデータを保持（使用済み状態ではないもの）
+    currentOriginalTexts: [], 
 
-#reloadButton {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    z-index: 1000;
-}
+    // 定数定義
+    INITIAL_IMAGE_PATH: 'img/intro.png',
+    IMAGE_BASE_PATH: 'img/',
 
-#darkModeToggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #555;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    z-index: 1000;
-}
+    /**
+     * 初期化処理
+     * DOM要素の取得とイベントリスナーの設定を行う
+     */
+    init: function() {
+        // DOM要素の取得
+        this.initialImageElement = document.getElementById("initialImage");
+        this.imageContainerGroup = document.getElementById("imageContainerGroup");
+        this.imgElements[0] = document.getElementById("displayImage0");
+        this.imgElements[1] = document.getElementById("displayImage1");
+        this.imgElements[2] = document.getElementById("displayImage2");
+        this.textContentElements[0] = document.getElementById("textContent0");
+        this.textContentElements[1] = document.getElementById("textContent1");
+        this.textContentElements[2] = document.getElementById("textContent2");
 
-#initialImage {
-    width: 872px;
-    height: 510px;
-    object-fit: contain;
-    margin-bottom: 30px;
-    max-width: 90%;
-    height: auto;
-}
+        // 画像データの準備
+        this.prepare_image_data(10);
+        this.initialImageElement.src = this.INITIAL_IMAGE_PATH;
 
-#imageContainerGroup {
-    display: none;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    width: 100%; /* ★ デスクトップ時もflexコンテナとして100%幅を使う */
-}
+        // イベントリスナーの設定
+        document.getElementById("changeImageButton").addEventListener("click", () => {
+            this.ChangeImage();
+        });
+        document.getElementById("reloadButton").addEventListener("click", () => {
+            window.location.reload();
+        });
+        document.getElementById("darkModeToggle").addEventListener("click", () => {
+            document.body.classList.toggle('light-mode');
+            const isLightMode = document.body.classList.contains('light-mode');
+            localStorage.setItem('darkMode', isLightMode ? 'off' : 'on');
+            document.getElementById("darkModeToggle").innerText = isLightMode ? 'ダークモード' : 'ライトモード';
+        });
 
-.image-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 25px;
-    position: relative;
-    min-height: 510px;
-    padding-top: 10px;
-    width: 280px;
-}
+        // ダークモード設定の適用
+        this.applySavedDarkModeSetting();
+    },
 
-.image-wrapper img {
-    width: 244px;
-    height: 300px;
-    object-fit: contain;
-    cursor: default;
-    max-width: 100%;
-    height: auto;
-}
+    /**
+     * 保存されたダークモード設定を適用する
+     */
+    applySavedDarkModeSetting: function() {
+        const darkModeSetting = localStorage.getItem('darkMode');
+        if (darkModeSetting === 'off') {
+            document.body.classList.add('light-mode');
+            document.getElementById("darkModeToggle").innerText = 'ダークモード';
+        } else {
+            document.body.classList.remove('light-mode');
+            document.getElementById("darkModeToggle").innerText = 'ライトモード';
+        }
+    },
 
-.used-status {
-    margin-top: 5px;
-    font-size: 2.5em;
-    font-weight: bold;
-    color: yellow;
-    visibility: hidden;
-    position: absolute;
-    bottom: 5px;
-}
+    /**
+     * 画像データを準備する
+     * @param {number} n - 画像の総数
+     */
+    prepare_image_data: function(n) {
+        for (let i = 1; i <= n; i++) {
+            let textContent = "";
+            switch(i) {
+                case 1: textContent = "Eldrazi(3)\nGuacamole(4)\nTightrope(3)"; break;
+                case 2: textContent = "Trendy(2)\nCircus(2)\nPirate(3)"; break;
+                case 3: textContent = "Misunderstood(4)\nTrapeze(2)\nElf(1)"; break;
+                case 4: textContent = "Narrow-Minded(4)\nBaloney(4)\nFireworks(3)"; break;
+                case 5: textContent = "Unsanctioned(5)\nAncient(3)\nJuggler(2)"; break;
+                case 6: textContent = "Phyrexian(4)\nMidway(3)\nBamboozle(3)"; break;
+                case 7: textContent = "Ancestral(2)\nHot Dog(1)\nMinotaur(4)"; break;
+                case 8: textContent = "Playable(3)\nDelusionary(6)\nHydra(2)"; break;
+                case 9: textContent = "Unassuming(3)\nGalatinous(5)\nSerpent(1)"; break;
+                case 10: textContent = "Unglued(2)\nPea-Brained(3)\nDinosaur(4)"; break;
+                default: textContent = `画像 ${i} のダミーテキスト。\n未定義の画像です。\n追加してください。`;
+            }
+            this.full_image_data.push({ src: `${this.IMAGE_BASE_PATH}${i}.png`, text: textContent });
+        }
+    },
 
-.text-content {
-    width: 280px;
-    height: 150px;
-    margin-top: 10px;
-    font-size: 2.0em;
-    line-height: 1.3em;
-    text-align: center;
-    overflow: hidden;
-    color: #eee;
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-}
+    /**
+     * 表示する画像をランダムに選択し、テキストを更新する
+     * 初回表示時にも正しいハイライトが適用されるようにする
+     */
+    ChangeImage: function() {
+        // 初期画像を非表示にし、画像グループを表示
+        if (this.initialImageElement.style.display !== 'none') {
+            this.initialImageElement.style.display = 'none';
+            this.imageContainerGroup.style.display = 'flex';
+        }
 
-.text-content .line {
-    display: block;
-    cursor: pointer;
-    transition: opacity 0.3s, color 0.3s;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
-    padding-bottom: 5px;
-    padding-top: 5px;
-}
+        // 画像データをシャッフル
+        let shuffledData = [...this.full_image_data];
+        for (let i = shuffledData.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
+        }
 
-.text-content .line:last-child {
-    padding-bottom: 0;
-}
+        const numDisplayImages = 3;
+        if (shuffledData.length >= numDisplayImages) {
+            this.currentOriginalTexts = []; // 新しく表示されるテキストを格納する配列を初期化
 
-.text-content .line.used {
-    color: yellow;
-    font-size: 0.8em;
-    opacity: 0.8;
-    cursor: pointer;
-}
+            // 各画像とテキストを設定
+            for (let k = 0; k < numDisplayImages; k++) {
+                this.imgElements[k].src = shuffledData[k].src;
+                this.currentOriginalTexts[k] = shuffledData[k].text.split('\n'); // 元のテキストを保存
+            }
+            
+            // 初回表示または再抽選時に、すべてのテキストを初期状態（使用済みなし）で更新
+            // そして、全体の最大値に基づいてハイライトを適用
+            this.updateAllDisplayedTexts(true); // ★ 引数trueで「使用済み」状態を無視して初期描画
+        }
+    },
 
-.highlight-red {
-    color: red;
-}
+    /**
+     * テキスト行がクリックされたときの処理
+     * 「使用済み」と元のテキストを切り替える。
+     * 切り替え時に赤文字のハイライトを再評価し、全てのテキストを更新する。
+     * @param {Event} event - クリックイベントオブジェクト
+     */
+    handleLineClick: function(event) {
+        const clickedLine = event.currentTarget;
+        const imageIndex = parseInt(clickedLine.dataset.imageIndex);
+        const lineIndex = parseInt(clickedLine.dataset.lineIndex);
 
-#changeImageButton {
-    position: fixed;
-    bottom: 20px;
-    padding: 15px 30px;
-    font-size: 22px;
-    cursor: pointer;
-    z-index: 1000;
-}
+        // 「使用済み」状態を切り替える
+        if (clickedLine.classList.contains('used')) {
+            clickedLine.classList.remove('used'); 
+        } else {
+            clickedLine.classList.add('used');
+        }
 
-/* Light mode styles */
-body.light-mode {
-    background-color: white;
-    color: black;
-}
+        // 状態が変更されたので、全ての表示中のテキストを再評価し、ハイライトを更新
+        this.updateAllDisplayedTexts(false); // ★ 通常クリックなのでfalse（現在の使用済み状態を考慮）
+    },
 
-body.light-mode h1 {
-    color: black;
-}
+    /**
+     * 現在表示されている全てのテキストコンテンツを再評価し、ハイライトを適用する
+     * この関数は、画像が切り替わった時とテキストがクリックされた時に呼び出される
+     * @param {boolean} resetUsedStatus - trueの場合、既存の「使用済み」状態を無視して再描画する（初回表示用）
+     */
+    updateAllDisplayedTexts: function(resetUsedStatus = false) { 
+        let allNumbers = []; // 現在表示されているすべての行の数値と元のテキストを収集
+        let currentUsedStates = []; // 各行の現在の「使用済み」状態を保持
 
-body.light-mode .text-content {
-    color: #333;
-}
+        // まず、現在の「使用済み」状態を把握する
+        for (let i = 0; i < this.textContentElements.length; i++) {
+            currentUsedStates[i] = [];
+            const lines = this.textContentElements[i].querySelectorAll('.line');
+            lines.forEach((lineElement, lineIndex) => {
+                // resetUsedStatusがtrueの場合は常にfalse（使用済みではない）とみなす
+                currentUsedStates[i][lineIndex] = resetUsedStatus ? false : lineElement.classList.contains('used');
+            });
+        }
 
-body.light-mode #reloadButton {
-    background-color: #6c757d;
-    color: white;
-}
+        // 「使用済み」ではない行のみから数値を抽出し、最大値を見つける
+        for (let i = 0; i < this.currentOriginalTexts.length; i++) {
+            this.currentOriginalTexts[i].forEach((originalLine, lineIndex) => {
+                if (!currentUsedStates[i][lineIndex]) { // 「使用済み」ではない行のみ対象
+                    const match = originalLine.match(/\((\d+)\)/);
+                    const number = match ? parseInt(match[1], 10) : -1;
+                    allNumbers.push({ number: number, imageIndex: i, lineIndex: lineIndex });
+                }
+            });
+        }
 
-body.light-mode #darkModeToggle {
-    background-color: #007bff;
-    color: white;
-}
+        // 有効な数値（-1ではない）の中から最大値を見つける
+        let maxNumber = -1;
+        allNumbers.forEach(item => {
+            if (item.number > maxNumber) {
+                maxNumber = item.number;
+            }
+        });
 
-body.light-mode #changeImageButton {
-    background-color: #007bff;
-    color: white;
-}
+        // 全てのテキストコンテンツを再レンダリング
+        for (let i = 0; i < this.textContentElements.length; i++) {
+            let processedHtml = '';
+            this.currentOriginalTexts[i].forEach((originalLine, lineIndex) => {
+                let displayLine = originalLine;
+                let isUsed = currentUsedStates[i][lineIndex]; // 保持していた「使用済み」状態を使用
 
-body.light-mode .used-status {
-    color: orange;
-}
+                if (isUsed) {
+                    displayLine = "使用済み"; // 「使用済み」の場合は表示テキストを上書き
+                } else {
+                    // 「使用済み」ではない場合のみハイライトを適用
+                    const match = originalLine.match(/\((\d+)\)/);
+                    if (maxNumber >= 0 && match && parseInt(match[1], 10) === maxNumber) {
+                        displayLine = originalLine.replace(/(\((\d+)\))/g, `<span class="highlight-red">$1</span>`);
+                    }
+                }
+                
+                // data-image-index と data-line-index を維持し、'used'クラスを動的に設定
+                processedHtml += `<span class="line ${isUsed ? 'used' : ''}" data-image-index="${i}" data-line-index="${lineIndex}">${displayLine}</span>`;
+            });
+            this.textContentElements[i].innerHTML = processedHtml;
 
-body.light-mode .highlight-red {
-    color: #cc0000;
-}
-
-body.light-mode .text-content .line.used {
-     color: orange;
-}
-
-
-/* --- スマートフォン向けスタイル (最大画面幅 768px, 縦向きがメイン) --- */
-@media (max-width: 768px) {
-    body {
-        margin-top: 20px;
-        padding-bottom: 60px;
+            // イベントリスナーを再設定 (innerHTMLの更新で失われるため)
+            this.textContentElements[i].querySelectorAll('.line').forEach(lineElement => {
+                lineElement.addEventListener('click', (event) => {
+                    this.handleLineClick(event);
+                });
+            });
+        }
     }
+};
 
-    h1 {
-        font-size: 1.8em;
-        margin-bottom: 20px;
-    }
-
-    #reloadButton,
-    #darkModeToggle {
-        font-size: 14px;
-        padding: 8px 12px;
-        top: 10px;
-    }
-
-    #initialImage {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
-        margin-bottom: 20px;
-    }
-
-    #imageContainerGroup {
-        flex-direction: column; /* 縦並びにする */
-        gap: 20px;
-        width: 100%;
-    }
-
-    .image-wrapper {
-        width: 90%;
-        max-width: 320px;
-        min-height: auto;
-        padding-top: 5px;
-        padding-bottom: 15px;
-        margin: 0 auto;
-    }
-
-    .image-wrapper img {
-        width: 80%;
-        height: auto;
-        max-width: 200px;
-    }
-
-    .text-content {
-        width: 90%;
-        max-width: 280px;
-        height: auto;
-        min-height: 120px;
-        font-size: 1.5em;
-        margin-top: 5px;
-        padding: 5px 0;
-    }
-
-    .text-content .line {
-        padding-bottom: 3px;
-        padding-top: 3px;
-    }
-
-    #changeImageButton {
-        padding: 10px 20px;
-        font-size: 18px;
-        bottom: 10px;
-    }
-}
-
-/* --- スマートフォン横向き（ランドスケープ）に最適化 (一般的なスマートフォン幅 568px以上) --- */
-/* 例: iPhone SE横向き(568x320), iPhone 8横向き(667x375), iPhone X横向き(812x375) など */
-@media (min-width: 568px) and (orientation: landscape) { /* ★ max-width条件を緩和 */
-    body {
-        margin-top: 15px; /* 上部のマージンを調整 */
-        padding-bottom: 50px;
-        /* bodyはflex-direction: columnのまま維持 */
-    }
-
-    h1 {
-        font-size: 1.6em;
-        margin-bottom: 15px;
-    }
-
-    #reloadButton,
-    #darkModeToggle {
-        font-size: 13px;
-        padding: 7px 11px;
-        top: 8px;
-    }
-    #reloadButton { left: 10px; }
-    #darkModeToggle { right: 10px; }
-
-    #initialImage {
-        width: 70%;
-        max-width: 600px; /* ★ より大きい横幅にも対応 */
-        margin-bottom: 15px;
-    }
-
-    #imageContainerGroup {
-        flex-direction: row; /* ★ 横並びにする */
-        flex-wrap: wrap;
-        gap: 15px; /* 画像間の隙間を調整 */
-        justify-content: center;
-        margin-bottom: 15px;
-        width: 100%; /* 利用可能な幅を最大限に利用 */
-    }
-
-    .image-wrapper {
-        /* 横並びで3つ収まるように計算 (gap15px x 2 = 30px を引く) */
-        width: calc(33.33% - 15px); /* ★ 3列表示を目指す */
-        min-width: 180px; /* 最低限の幅を確保 */
-        max-width: 250px; /* 大きすぎないように制限 */
-        min-height: auto;
-        padding-bottom: 10px;
-        padding-top: 5px;
-        margin: 0; /* マージンをリセット */
-    }
-
-    .image-wrapper img {
-        width: 90%;
-        max-width: 150px; /* 画像サイズを調整 */
-    }
-
-    .text-content {
-        width: 95%;
-        min-height: 90px;
-        font-size: 1.2em;
-        line-height: 1.2em;
-        margin-top: 5px;
-    }
-
-    .text-content .line {
-        padding-bottom: 2px;
-        padding-top: 2px;
-    }
-
-    #changeImageButton {
-        padding: 12px 25px; /* ボタンのサイズを少し大きく */
-        font-size: 20px;
-        bottom: 15px;
-    }
-}
-
-/* --- さらに小さな横向き画面（例: iPhone SE横向き 567px以下） --- */
-@media (max-width: 567px) and (orientation: landscape) { /* ★ max-width条件を追加 */
-    body {
-        margin-top: 10px;
-        padding-bottom: 40px;
-    }
-
-    h1 {
-        font-size: 1.4em;
-        margin-bottom: 10px;
-    }
-
-    #reloadButton,
-    #darkModeToggle {
-        font-size: 11px;
-        padding: 6px 9px;
-        top: 5px;
-    }
-
-    #initialImage {
-        width: 90%;
-        max-width: 350px;
-        margin-bottom: 10px;
-    }
-
-    #imageContainerGroup {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .image-wrapper {
-        /* 2列表示の計算 (gap10px x 1 = 10px を引く) */
-        width: calc(50% - 10px); /* ★ 2列表示を目指す */
-        min-width: 140px;
-        max-width: 200px;
-        padding-bottom: 8px;
-    }
-
-    .image-wrapper img {
-        width: 90%;
-        max-width: 120px;
-    }
-
-    .text-content {
-        min-height: 80px;
-        font-size: 1.1em;
-        line-height: 1.1em;
-        margin-top: 3px;
-    }
-
-    #changeImageButton {
-        padding: 10px 20px;
-        font-size: 16px;
-        bottom: 10px;
-    }
-}
+// DOMContentLoadedイベントで初期化処理を実行
+document.addEventListener("DOMContentLoaded", () => {
+    GM.init();
+});
