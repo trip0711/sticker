@@ -83,7 +83,7 @@ const GM = {
                 case 6: textContent = "Phyrexian(4)\nMidway(3)\nBamboozle(3)"; break;
                 case 7: textContent = "Ancestral(2)\nHot Dog(1)\nMinotaur(4)"; break;
                 case 8: textContent = "Playable(3)\nDelusionary(6)\nHydra(2)"; break;
-                case 9: textContent = "Unassuming(3)\nGalatinous(5)\nSerpent(1)"; break;
+                case 9: textContent = "Unassuming(3)\nGelatinous(5)\nSerpent(1)"; break;
                 case 10: textContent = "Unglued(2)\nPea-Brained(3)\nDinosaur(4)"; break;
                 default: textContent = `画像 ${i} のダミーテキスト。\n未定義の画像です。\n追加してください。`;
             }
