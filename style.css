@@ -1,0 +1,183 @@
+/* style.css */
+
+body {
+    background-color: black;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 80px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+#reloadButton {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+#darkModeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+#initialImage {
+    width: 872px;
+    height: 510px;
+    object-fit: contain;
+    margin-bottom: 30px;
+}
+
+#imageContainerGroup {
+    display: none;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.image-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 25px;
+    position: relative;
+    min-height: 510px;
+    padding-top: 10px;
+    width: 280px;
+}
+
+.image-wrapper img {
+    width: 244px;
+    height: 300px;
+    object-fit: contain;
+    cursor: default;
+}
+
+.used-status {
+    margin-top: 5px;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: yellow;
+    visibility: hidden;
+    position: absolute;
+    bottom: 5px;
+}
+
+.text-content {
+    width: 280px;
+    height: 150px;
+    margin-top: 10px;
+    font-size: 2.0em;
+    line-height: 1.3em;
+    text-align: center;
+    overflow: hidden;
+    color: #eee;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.text-content .line {
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.3s, color 0.3s;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.text-content .line:last-child {
+    padding-bottom: 0;
+}
+
+.text-content .line.used {
+    color: yellow;
+    font-size: 0.8em;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.highlight-red {
+    color: red;
+}
+
+#changeImageButton {
+    position: fixed;
+    bottom: 20px;
+    padding: 15px 30px;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* Light mode styles */
+body.light-mode {
+    background-color: white;
+    color: black;
+}
+
+body.light-mode h1 {
+    color: black;
+}
+
+body.light-mode .text-content {
+    color: #333;
+}
+
+body.light-mode #reloadButton {
+    background-color: #6c757d;
+    color: white;
+}
+
+body.light-mode #darkModeToggle {
+    background-color: #007bff;
+    color: white;
+}
+
+body.light-mode #changeImageButton {
+    background-color: #007bff;
+    color: white;
+}
+
+body.light-mode .used-status {
+    color: orange;
+}
+
+body.light-mode .highlight-red {
+    color: #cc0000;
+}
+
+body.light-mode .text-content .line.used {
+     color: orange;
+}
