@@ -1,24 +1,25 @@
 /* style.css */
 
 /* --- 基本スタイル（PC向けデフォルト） --- */
+/* PC表示ではこれらのpx指定が優先されます。 */
 body {
     background-color: black;
     font-family: Arial, sans-serif;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 50px; /* 上部マージン */
     color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
     position: relative;
-    padding-bottom: 80px;
+    padding-bottom: 80px; /* 下部パディング（ボタンのスペース） */
     transition: background-color 0.3s, color 0.3s;
 }
 
 h1 {
     margin-bottom: 30px;
-    font-size: 2.5em; /* PCでのデフォルトサイズ */
+    font-size: 2.5em; /* PCでのタイトルサイズ */
 }
 
 #reloadButton {
@@ -50,21 +51,23 @@ h1 {
 }
 
 #initialImage {
-    width: 872px; /* PCでの固定幅 */
-    height: 510px; /* PCでの固定高さ */
+    width: 872px; /* PCでの初期画像の固定幅 */
+    height: 510px; /* PCでの初期画像の固定高さ */
     object-fit: contain;
     margin-bottom: 30px;
-    max-width: 90%; /* ブラウザウィンドウ縮小時のはみ出し防止 */
-    height: auto; /* 高さを自動調整し、アスペクト比を維持 */
+    /* max-width: 100%; height: auto; は、PCでウィンドウを縮小した際のはみ出し防止用 */
+    max-width: 100%;
+    height: auto;
 }
 
 #imageContainerGroup {
-    display: none;
+    display: none; /* JSでflexに切り替える */
     justify-content: center;
-    gap: 30px;
+    gap: 30px; /* 各画像コンテナ間の隙間 */
     margin-bottom: 30px;
-    flex-wrap: wrap;
-    width: 100%; /* Flexコンテナとして幅を確保 */
+    flex-wrap: wrap; /* 必要に応じて折り返し */
+    width: 900px; /* PCでの画像グループの総幅を固定（3x280px + 2x30px = 900px） */
+    max-width: 90%; /* PCでウィンドウを縮小した際のはみ出し防止 */
 }
 
 .image-wrapper {
@@ -73,14 +76,14 @@ h1 {
     align-items: center;
     padding-bottom: 25px;
     position: relative;
-    min-height: 510px; /* PCでの最小高さ */
+    min-height: 510px; /* PCでの各画像のコンテナの最小高さ */
     padding-top: 10px;
-    width: 280px; /* PCでの固定幅 */
+    width: 280px; /* PCでの各画像のコンテナの固定幅 */
 }
 
 .image-wrapper img {
-    width: 244px; /* PCでの固定幅 */
-    height: 300px; /* PCでの固定高さ */
+    width: 244px; /* PCでの表示画像の固定幅 */
+    height: 300px; /* PCでの表示画像の固定高さ */
     object-fit: contain;
     cursor: default;
     max-width: 100%; /* 親要素の幅に合わせて縮小 */
@@ -89,7 +92,7 @@ h1 {
 
 .used-status {
     margin-top: 5px;
-    font-size: 2.5em;
+    font-size: 2.5em; /* 元の文字サイズに対する相対値 */
     font-weight: bold;
     color: yellow;
     visibility: hidden;
@@ -98,10 +101,10 @@ h1 {
 }
 
 .text-content {
-    width: 280px; /* PCでの固定幅 */
-    height: 150px; /* PCでの固定高さ */
+    width: 280px; /* PCでのテキストボックスの固定幅 */
+    height: 150px; /* PCでのテキストボックスの固定高さ */
     margin-top: 10px;
-    font-size: 2.0em; /* PCでのデフォルトサイズ */
+    font-size: 2.0em; /* PCでのテキストのフォントサイズ */
     line-height: 1.3em;
     text-align: center;
     overflow: hidden;
@@ -117,10 +120,10 @@ h1 {
     cursor: pointer;
     transition: opacity 0.3s, color 0.3s;
     text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
+    white-space: nowrap; /* テキストの折り返しなし */
+    overflow: hidden; /* はみ出したテキストを隠す */
+    text-overflow: ellipsis; /* はみ出したテキストを...で表示 */
+    flex-grow: 1; /* 行の高さを均等に分散 */
     padding-bottom: 5px;
     padding-top: 5px;
 }
@@ -144,12 +147,12 @@ h1 {
     position: fixed;
     bottom: 20px;
     padding: 15px 30px;
-    font-size: 22px; /* PCでのデフォルトサイズ */
+    font-size: 22px; /* PCでのボタンのフォントサイズ */
     cursor: pointer;
     z-index: 1000;
 }
 
-/* Light mode styles */
+/* --- ライトモードのスタイル（PC向けを含む） --- */
 body.light-mode {
     background-color: white;
     color: black;
@@ -191,16 +194,18 @@ body.light-mode .text-content .line.used {
 }
 
 
-/* --- スマートフォン・タブレット向けスタイル (最大画面幅 768px以下) --- */
-/* PCでウィンドウを縮小してもこれが適用されないように、min-width条件を追加することも検討 */
-@media (max-width: 768px) {
+/* --- スマートフォン・タブレット向けスタイル（最大画面幅 991px以下） --- */
+/* PCでウィンドウを縮小した際に、このスタイルが誤って適用されないようにします。 */
+/* 例えば、通常のPCモニターでフルサイズで表示している場合は991pxよりも大きいので、このブロックは適用されません。 */
+/* 991pxは一般的なタブレット（縦向き）や小型ノートPCの幅を意識したブレークポイントです。 */
+@media (max-width: 991px) {
     body {
         margin-top: 15px;
         padding-bottom: 60px;
     }
 
     h1 {
-        font-size: 1.6em;
+        font-size: 1.8em; /* PCよりも小さく */
         margin-bottom: 15px;
     }
 
@@ -209,41 +214,42 @@ body.light-mode .text-content .line.used {
         font-size: 13px;
         padding: 7px 11px;
         top: 10px;
+        left: 10px; /* 端との間隔を調整 */
+        right: 10px;
     }
 
     #initialImage {
-        width: 90%;
-        max-width: 400px;
+        width: 90%; /* 画面幅に合わせて調整 */
+        max-width: 500px; /* 最大幅を制限 */
         margin-bottom: 15px;
     }
 
     #imageContainerGroup {
-        flex-direction: column;
+        flex-direction: column; /* 縦並び */
         gap: 15px;
-        width: 100%;
-        padding: 0 10px;
+        width: 100%; /* 利用可能な幅いっぱいに */
+        max-width: 500px; /* 全体の最大幅を制限 */
+        padding: 0 10px; /* 左右にパディング */
         box-sizing: border-box;
     }
 
     .image-wrapper {
-        width: 95%;
-        max-width: 320px;
-        min-height: auto;
+        width: 95%; /* imageContainerGroupの幅に対して相対 */
+        max-width: 320px; /* 各画像の最大幅 */
+        min-height: auto; /* 高さはコンテンツに合わせて自動調整 */
         padding-top: 5px;
         padding-bottom: 10px;
-        margin: 0 auto;
+        margin: 0 auto; /* 中央揃え */
     }
 
     .image-wrapper img {
         width: 80%;
-        height: auto;
-        max-width: 200px;
+        max-width: 250px;
     }
 
     .text-content {
         width: 95%;
         max-width: 280px;
-        height: auto;
         min-height: 100px;
         font-size: 1.4em;
         margin-top: 5px;
@@ -262,12 +268,12 @@ body.light-mode .text-content .line.used {
     }
 }
 
-/* --- スマートフォン横向き（ランドスケープ）に最適化 (min-width: 568px AND orientation: landscape) --- */
-/* PCでの縮小時に誤適用されないよう、min-width条件が重要 */
-@media (min-width: 568px) and (orientation: landscape) and (max-width: 991px) { /* ★ max-width 991pxを追加 */
+/* --- さらに小さなスマートフォン向けスタイル（最大画面幅 567px以下） --- */
+/* iPhone SEなどの縦向き、または一部の横向き（非常に狭いもの）に適用 */
+@media (max-width: 567px) {
     body {
         margin-top: 10px;
-        padding-bottom: 40px;
+        padding-bottom: 50px;
     }
 
     h1 {
@@ -280,54 +286,36 @@ body.light-mode .text-content .line.used {
         font-size: 12px;
         padding: 6px 10px;
         top: 5px;
-        left: 5px;
-        right: 5px;
     }
 
     #initialImage {
-        width: 60%;
-        max-width: 500px;
+        width: 95%;
+        max-width: 350px;
         margin-bottom: 10px;
     }
 
     #imageContainerGroup {
-        flex-direction: row;
-        flex-wrap: wrap;
         gap: 10px;
-        justify-content: center;
-        margin-bottom: 10px;
-        width: 100%;
         padding: 0 5px;
-        box-sizing: border-box;
+        max-width: 380px; /* さらに狭い画面向けにグループの最大幅も制限 */
     }
 
     .image-wrapper {
-        width: calc(33.33% - 10px);
-        min-width: 160px;
-        max-width: 220px;
-        min-height: auto;
+        width: 98%; /* さらに幅を広げる */
+        max-width: 300px; /* 最大幅を制限 */
         padding-bottom: 8px;
-        padding-top: 3px;
-        margin: 0;
     }
 
     .image-wrapper img {
-        width: 90%;
-        max-width: 140px;
+        width: 85%;
+        max-width: 200px;
     }
 
     .text-content {
-        width: 95%;
-        min-height: 80px;
-        font-size: 1.1em;
-        line-height: 1.1em;
+        min-height: 90px;
+        font-size: 1.3em;
         margin-top: 3px;
         padding: 2px 0;
-    }
-
-    .text-content .line {
-        padding-bottom: 1px;
-        padding-top: 1px;
     }
 
     #changeImageButton {
@@ -337,52 +325,104 @@ body.light-mode .text-content .line.used {
     }
 }
 
-/* --- より小さな横向き画面（例: iPhone SE横向き max-width: 567px） --- */
-/* PCでの縮小時に誤適用されないよう、min-width条件が重要 */
-@media (max-width: 567px) and (orientation: landscape) { /* このブレークポイントは変更なし */
+
+/* --- スマートフォン横向き（ランドスケープ）に最適化 --- */
+/* 画面の向きが横で、かつ特定の幅の範囲内にある場合に適用 */
+
+/* 中間幅の横向きスマホ (例: iPhone 6/7/8 Plus, X/XR/XS, Pixelなどの横向き) */
+@media (min-width: 568px) and (max-width: 991px) and (orientation: landscape) {
+    body {
+        margin-top: 10px;
+        padding-bottom: 40px;
+    }
+    h1 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    #reloadButton, #darkModeToggle {
+        font-size: 12px;
+        padding: 6px 10px;
+        top: 5px;
+    }
+    #initialImage {
+        width: 60%;
+        max-width: 500px;
+        margin-bottom: 10px;
+    }
+    #imageContainerGroup {
+        flex-direction: row; /* 横並び */
+        flex-wrap: wrap;
+        gap: 10px; /* 隙間 */
+        justify-content: center;
+        width: 100%;
+        max-width: 700px; /* 横向きグループの最大幅を調整 */
+        padding: 0 5px;
+    }
+    .image-wrapper {
+        width: calc(33.33% - 10px); /* 3列表示 */
+        min-width: 160px; /* 最小幅確保 */
+        max-width: 220px; /* 最大幅制限 */
+        min-height: auto;
+        padding-bottom: 8px;
+        padding-top: 3px;
+        margin: 0;
+    }
+    .image-wrapper img {
+        width: 90%;
+        max-width: 140px;
+    }
+    .text-content {
+        min-height: 80px;
+        font-size: 1.1em;
+        line-height: 1.1em;
+        margin-top: 3px;
+        padding: 2px 0;
+    }
+    #changeImageButton {
+        padding: 10px 20px;
+        font-size: 18px;
+        bottom: 10px;
+    }
+}
+
+/* 非常に狭い横向きスマホ (例: iPhone SE, Pixel 2など横向き) */
+@media (max-width: 567px) and (orientation: landscape) {
     body {
         margin-top: 5px;
         padding-bottom: 30px;
     }
-
     h1 {
         font-size: 1.2em;
         margin-bottom: 8px;
     }
-
-    #reloadButton,
-    #darkModeToggle {
+    #reloadButton, #darkModeToggle {
         font-size: 10px;
         padding: 4px 7px;
         top: 3px;
     }
-
     #initialImage {
         width: 80%;
         max-width: 300px;
         margin-bottom: 8px;
     }
-
     #imageContainerGroup {
-        flex-direction: row;
+        flex-direction: row; /* 横並び */
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 8px; /* 隙間 */
         padding: 0 3px;
+        max-width: 400px; /* グループ全体の最大幅をさらに調整 */
     }
-
     .image-wrapper {
-        width: calc(50% - 8px);
+        width: calc(50% - 8px); /* 2列表示 */
         min-width: 120px;
         max-width: 180px;
         padding-bottom: 5px;
         padding-top: 2px;
     }
-
     .image-wrapper img {
         width: 90%;
         max-width: 100px;
     }
-
     .text-content {
         min-height: 60px;
         font-size: 0.9em;
@@ -390,12 +430,10 @@ body.light-mode .text-content .line.used {
         margin-top: 2px;
         padding: 1px 0;
     }
-
     .text-content .line {
         padding-bottom: 0px;
         padding-top: 0px;
     }
-
     #changeImageButton {
         padding: 8px 15px;
         font-size: 14px;
