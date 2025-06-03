@@ -7,7 +7,7 @@ body {
     margin-top: 50px;
     color: white;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* ★ 縦並びに戻す */
     align-items: center;
     min-height: 100vh;
     position: relative;
@@ -52,8 +52,8 @@ h1 {
     height: 510px;
     object-fit: contain;
     margin-bottom: 30px;
-    max-width: 90%; /* レスポンシブ対応 */
-    height: auto; /* 高さを自動調整 */
+    max-width: 90%;
+    height: auto;
 }
 
 #imageContainerGroup {
@@ -61,7 +61,8 @@ h1 {
     justify-content: center;
     gap: 30px;
     margin-bottom: 30px;
-    flex-wrap: wrap; /* 小さい画面で折り返す */
+    flex-wrap: wrap;
+    width: 100%; /* ★ デスクトップ時もflexコンテナとして100%幅を使う */
 }
 
 .image-wrapper {
@@ -80,8 +81,8 @@ h1 {
     height: 300px;
     object-fit: contain;
     cursor: default;
-    max-width: 100%; /* 親要素の幅に合わせて縮小 */
-    height: auto; /* 高さを自動調整 */
+    max-width: 100%;
+    height: auto;
 }
 
 .used-status {
@@ -257,69 +258,64 @@ body.light-mode .text-content .line.used {
     }
 }
 
-/* --- スマートフォン横向き（ランドスケープ）に最適化 (一般的なスマートフォン幅 568px以上, 高さ480px以下) --- */
-/* 例えば、iPhone SE横向き(568x320), iPhone 8横向き(667x375), iPhone X横向き(812x375) など */
-@media (min-width: 568px) and (max-width: 896px) and (orientation: landscape) {
+/* --- スマートフォン横向き（ランドスケープ）に最適化 (一般的なスマートフォン幅 568px以上) --- */
+/* 例: iPhone SE横向き(568x320), iPhone 8横向き(667x375), iPhone X横向き(812x375) など */
+@media (min-width: 568px) and (orientation: landscape) { /* ★ max-width条件を緩和 */
     body {
-        margin-top: 10px; /* 上部のマージンをさらに減らす */
+        margin-top: 15px; /* 上部のマージンを調整 */
         padding-bottom: 50px;
-        align-items: flex-start; /* 左寄せにすることで、コンテンツを横に並べやすくする */
-        flex-direction: row; /* 横並びにする */
-        flex-wrap: wrap; /* 必要であれば折り返す */
-        justify-content: center; /* 中央に寄せる */
-        gap: 20px; /* body直下の子要素間の隙間 */
+        /* bodyはflex-direction: columnのまま維持 */
     }
 
     h1 {
-        width: 100%; /* タイトルが横幅いっぱいになるように */
-        font-size: 1.6em; /* フォントサイズ調整 */
-        margin-bottom: 10px; /* マージンを減らす */
+        font-size: 1.6em;
+        margin-bottom: 15px;
     }
 
     #reloadButton,
     #darkModeToggle {
-        font-size: 12px;
-        padding: 6px 10px;
-        top: 5px; /* 上からの位置をさらに調整 */
+        font-size: 13px;
+        padding: 7px 11px;
+        top: 8px;
     }
-    #reloadButton { left: 5px; }
-    #darkModeToggle { right: 5px; }
+    #reloadButton { left: 10px; }
+    #darkModeToggle { right: 10px; }
 
     #initialImage {
-        width: 70%; /* 横長画面に合わせて調整 */
-        max-width: 500px; /* 最大幅を制限 */
-        margin-bottom: 10px;
+        width: 70%;
+        max-width: 600px; /* ★ より大きい横幅にも対応 */
+        margin-bottom: 15px;
     }
 
     #imageContainerGroup {
-        flex-direction: row; /* 横並びにする */
-        flex-wrap: wrap; /* 3つ並ばない場合は折り返す */
+        flex-direction: row; /* ★ 横並びにする */
+        flex-wrap: wrap;
         gap: 15px; /* 画像間の隙間を調整 */
-        justify-content: center; /* 中央揃え */
-        margin-bottom: 10px;
-        width: auto; /* 内容に応じて幅を調整 */
+        justify-content: center;
+        margin-bottom: 15px;
+        width: 100%; /* 利用可能な幅を最大限に利用 */
     }
 
     .image-wrapper {
-        width: calc(33% - 15px); /* 3列表示の計算（隙間も考慮） */
-        /* または min-width を設定して固定 */
+        /* 横並びで3つ収まるように計算 (gap15px x 2 = 30px を引く) */
+        width: calc(33.33% - 15px); /* ★ 3列表示を目指す */
         min-width: 180px; /* 最低限の幅を確保 */
         max-width: 250px; /* 大きすぎないように制限 */
-        min-height: auto; /* 高さ自動調整 */
+        min-height: auto;
         padding-bottom: 10px;
         padding-top: 5px;
         margin: 0; /* マージンをリセット */
     }
 
     .image-wrapper img {
-        width: 90%; /* 親要素に合わせて調整 */
+        width: 90%;
         max-width: 150px; /* 画像サイズを調整 */
     }
 
     .text-content {
-        width: 95%; /* image-wrapperの幅に合わせて */
-        min-height: 90px; /* 最小高さを調整 */
-        font-size: 1.2em; /* フォントサイズを調整 */
+        width: 95%;
+        min-height: 90px;
+        font-size: 1.2em;
         line-height: 1.2em;
         margin-top: 5px;
     }
@@ -330,36 +326,35 @@ body.light-mode .text-content .line.used {
     }
 
     #changeImageButton {
-        position: static; /* bodyのflexコンテナ内で静的に配置 */
-        margin-top: 10px; /* 上部にマージンを追加 */
-        padding: 8px 18px;
-        font-size: 16px;
+        padding: 12px 25px; /* ボタンのサイズを少し大きく */
+        font-size: 20px;
+        bottom: 15px;
     }
 }
 
-/* さらに特定の小さな横向き（例: iPhone SE横向き） */
-@media (min-width: 320px) and (max-width: 567px) and (orientation: landscape) {
+/* --- さらに小さな横向き画面（例: iPhone SE横向き 567px以下） --- */
+@media (max-width: 567px) and (orientation: landscape) { /* ★ max-width条件を追加 */
     body {
-        margin-top: 5px;
+        margin-top: 10px;
         padding-bottom: 40px;
     }
 
     h1 {
-        font-size: 1.3em;
-        margin-bottom: 5px;
+        font-size: 1.4em;
+        margin-bottom: 10px;
     }
 
     #reloadButton,
     #darkModeToggle {
-        font-size: 10px;
-        padding: 5px 8px;
-        top: 3px;
+        font-size: 11px;
+        padding: 6px 9px;
+        top: 5px;
     }
 
     #initialImage {
-        width: 80%;
-        max-width: 300px;
-        margin-bottom: 5px;
+        width: 90%;
+        max-width: 350px;
+        margin-bottom: 10px;
     }
 
     #imageContainerGroup {
@@ -369,27 +364,28 @@ body.light-mode .text-content .line.used {
     }
 
     .image-wrapper {
-        width: calc(50% - 10px); /* 2列表示の計算 */
-        min-width: 150px;
+        /* 2列表示の計算 (gap10px x 1 = 10px を引く) */
+        width: calc(50% - 10px); /* ★ 2列表示を目指す */
+        min-width: 140px;
         max-width: 200px;
-        padding-bottom: 5px;
+        padding-bottom: 8px;
     }
 
     .image-wrapper img {
-        width: 85%;
+        width: 90%;
         max-width: 120px;
     }
 
     .text-content {
-        min-height: 70px;
-        font-size: 1.0em;
+        min-height: 80px;
+        font-size: 1.1em;
         line-height: 1.1em;
         margin-top: 3px;
     }
 
     #changeImageButton {
-        padding: 6px 12px;
-        font-size: 14px;
-        margin-top: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        bottom: 10px;
     }
 }
