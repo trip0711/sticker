@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ステッカーくん ブラウザ版</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <h1>ステッカーくん ブラウザ版</h1>
+
+    <button id="reloadButton">リロード</button>
+    <button id="darkModeToggle">ダークモード</button>
+
+    <img id="initialImage" src="" alt="初期画像">
+
+    <div id="imageContainerGroup" class="image-container">
+        <div class="image-wrapper">
+            <img id="displayImage0" src="" alt="画像0">
+            <div id="textContent0" class="text-content"></div>
+        </div>
+        <div class="image-wrapper">
+            <img id="displayImage1" src="" alt="画像1">
+            <div id="textContent1" class="text-content"></div>
+        </div>
+        <div class="image-wrapper">
+            <img id="displayImage2" src="" alt="画像2">
+            <div id="textContent2" class="text-content"></div>
+        </div>
+    </div>
+
+    <button id="changeImageButton">抽選</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
